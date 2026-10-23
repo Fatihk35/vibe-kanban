@@ -48,14 +48,15 @@ RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
 # /home/node — it holds the vibe-kanban DB/config (~/.local/share/vibe-kanban),
 # Claude Code state (~/.claude), the npx cache and the cloned repos (~/repos).
 USER node
-WORKDIR /home/node/repos
 
 # Warm the npx cache: vibe-kanban launches `npx -y @anthropic-ai/claude-code@<ver>`.
 RUN npx -y "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" --version \
-  && mkdir -p /home/node/.local/share/vibe-kanban /home/node/.claude \
+  && mkdir -p /home/node/repos /home/node/.local/share/vibe-kanban /home/node/.claude \
   && git config --global user.name "Vibe Kanban" \
   && git config --global user.email "vibe-kanban@users.noreply.github.com" \
   && git config --global init.defaultBranch main
+
+WORKDIR /home/node/repos
 
 ENV HOST=0.0.0.0 \
     PORT=3000 \

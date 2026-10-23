@@ -43,6 +43,12 @@ RUN curl -fsSL -o /tmp/vk.zip \
 RUN npm install -g "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
   && npm cache clean --force
 
+# GitHub auth for agents: with GH_TOKEN set on the Coolify app, `gh` works and
+# git uses it as the credential helper for https clones/pushes. System-level so
+# it applies even though /home/node is a persistent volume.
+RUN git config --system credential.https://github.com.helper "" \
+  && git config --system --add credential.https://github.com.helper "!/usr/bin/gh auth git-credential"
+
 # Run as the non-root `node` user: Claude Code refuses
 # --dangerously-skip-permissions as root. Mount a persistent volume on
 # /home/node — it holds the vibe-kanban DB/config (~/.local/share/vibe-kanban),
